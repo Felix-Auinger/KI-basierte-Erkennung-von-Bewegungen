@@ -28,23 +28,37 @@ def main():
         if r.keypoints and r.keypoints.data.shape[1] >= 17:
             keypoints = r.keypoints.data[0].numpy()  # Konvertiere in numpy-Array
 
-            right_shoulder = keypoints[6][:2]  # Index 6 rechte Schulter (X,Y)
+            # Koordinaten für die rechte Körperseite
+            right_shoulder = keypoints[6][:2]  # Index 6 rechte Schulter
             right_elbow = keypoints[8][:2]  # Index 8 rechter Ellbogen
             right_wrist = keypoints[10][:2]  # Index 10 rechtes Handgelenk
+            right_hip = keypoints[12][:2]  # Index 12 rechte Hüfte
+            right_knee = keypoints[14][:2]  # Index 14 rechtes Knie
+            right_ankle = keypoints[16][:2]  # Index 16 rechter Knöchel
 
-            angle = calculate_angle(right_shoulder, right_elbow, right_wrist)
-            angle_text = f"{angle:.2f} Grad"
+            # Berechnung der Winkel
+            arm_angle = calculate_angle(right_shoulder, right_elbow, right_wrist)
+            leg_angle = calculate_angle(right_hip, right_knee, right_ankle)
+            hip_angle = calculate_angle(right_shoulder, right_hip, right_knee)
 
             if r.orig_img is not None:
                 image = r.orig_img.copy()
-                cv2.putText(image, angle_text,
-                            org=(int(right_elbow[0]), int(right_elbow[1])),
-                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                            fontScale=1, color=(0, 255, 0), thickness=2)
+                cv2.putText(image, f"Arm: {arm_angle:.2f}Grad",
+                            (int(right_elbow[0]), int(right_elbow[1])),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.5, (0, 255, 0), 2)
+                cv2.putText(image, f"Bein: {leg_angle:.2f}Grad",
+                            (int(right_knee[0]), int(right_knee[1])),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.5, (255, 0, 0), 2)
+                cv2.putText(image, f"Huefte: {hip_angle:.2f}Grad",
+                            (int(right_hip[0]), int(right_hip[1])),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.5, (0, 0, 255), 2)
 
-                cv2.imshow('Winkel Rechter Arm', image)
+                # Bild mit den Winkeln anzeigen
+                cv2.imshow('Winkel Rechte Seite', image)
                 cv2.waitKey(1)
-
 
 if __name__ == "__main__":
     main()
