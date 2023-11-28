@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from ultralytics import YOLO
+import json
 
 
 def calculate_angle(A, B, C):
@@ -19,10 +20,47 @@ def calculate_angle(A, B, C):
     angle_deg = np.degrees(angle)
     return angle_deg
 
-
 def main():
     model = YOLO('yolov8n-pose.pt')
-    results = model(source=0, show=False, conf=0.3, save=False, stream=True)
+    results = model(source="test5.mp4", show=False, conf=0.3, save=False, stream=True)
+
+    all_keypoints = []  # List to store all keypoints data
+
+    for frame_idx, r in enumerate(results):
+        if r.keypoints and len(r.keypoints.xy) > 0:
+            # Extract xy coordinates and confidence scores
+            xy = r.keypoints.xy[0].cpu().numpy()  # Assuming the first set of keypoints corresponds to the detection
+            confidences = r.keypoints.conf[0].cpu().numpy() if r.keypoints.conf is not None else [None] * len(xy)
+
+            keypoints_list = []
+            for (x, y), confidence in zip(xy, confidences):
+                keypoints_list.extend([x, y, confidence or 0])  # Adding 0 if confidence is None
+            
+            score = r.probs[0].item() if r.probs is not None else None  # Modify this line as needed
+
+            # Convert each float32 value to a native Python float for JSON serialization
+            keypoints_list = [float(val) for val in keypoints_list]
+
+            # Convert the box coordinates to numpy array and then to list
+            # Choose the appropriate format (xyxy, xywh, etc.) as per your requirement
+            # Assuming you're using xyxy format for the box
+            box = [float(val) for val in r.boxes.xyxy[0].cpu().numpy().tolist()] if r.boxes is not None else []
+
+            # Format the data as per your JSON structure
+            keypoints_data = {
+                "image_id": f"{frame_idx}.jpg",
+                "category_id": 1,  # Assuming category_id is 1 for all, modify as needed
+                "keypoints": keypoints_list,
+                "score": float(score) if score is not None else None,
+                "box": box, 
+                "idx": [0.0] 
+            }
+
+            all_keypoints.append(keypoints_data)
+
+    # Save the keypoints data to a JSON file
+    with open('keypoints_output.json', 'w') as f:
+        json.dump(all_keypoints, f, indent=4)
 
     for r in results:
         if r.keypoints and r.keypoints.data.shape[1] >= 17:
