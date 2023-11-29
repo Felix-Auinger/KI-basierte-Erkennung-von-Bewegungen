@@ -20,9 +20,54 @@ def calculate_angle(A, B, C):
     angle_deg = np.degrees(angle)
     return angle_deg
 
+def estimate_additional_keypoints(keypoints):
+    # Extract keypoints based on their indices from COCO format
+    nose = keypoints[0:3]
+    l_shoulder = keypoints[5 * 3:5 * 3 + 3]
+    r_shoulder = keypoints[6 * 3:6 * 3 + 3]
+    l_hip = keypoints[11 * 3:11 * 3 + 3]
+    r_hip = keypoints[12 * 3:12 * 3 + 3]
+    
+    # Estimate the additional keypoints
+    # 17 - Head (above the nose)
+    head = [nose[0], nose[1] - 50, nose[2]]  # Adjust Y-offset as needed
+
+    # 18 - Neck (midpoint between the shoulders)
+    neck = [
+        (l_shoulder[0] + r_shoulder[0]) / 2,
+        (l_shoulder[1] + r_shoulder[1]) / 2,
+        (l_shoulder[2] + r_shoulder[2]) / 2,
+    ]
+
+    # 19 - Hip (midpoint between the hips)
+    hip = [
+        (l_hip[0] + r_hip[0]) / 2,
+        (l_hip[1] + r_hip[1]) / 2,
+        (l_hip[2] + r_hip[2]) / 2,
+    ]
+    
+    # For the remaining keypoints (big toes, small toes, heels), we can set them to the position of the ankles
+    # since we do not have information on the feet from the upper body keypoints.
+    # They should ideally be estimated from full body keypoints or set to a default value (like [0, 0, 0]).
+    # Here, we use the ankle keypoints and apply a small offset.
+    l_ankle = keypoints[15 * 3:15 * 3 + 3]
+    r_ankle = keypoints[16 * 3:16 * 3 + 3]
+    
+    l_big_toe = [l_ankle[0], l_ankle[1] + 10, l_ankle[2]]
+    r_big_toe = [r_ankle[0], r_ankle[1] + 10, r_ankle[2]]
+    l_small_toe = [l_ankle[0] + 10, l_ankle[1], l_ankle[2]]
+    r_small_toe = [r_ankle[0] + 10, r_ankle[1], r_ankle[2]]
+    l_heel = [l_ankle[0], l_ankle[1] - 10, l_ankle[2]]
+    r_heel = [r_ankle[0], r_ankle[1] - 10, r_ankle[2]]
+    
+    # Combine all keypoints into a single list
+    all_keypoints = keypoints[:17 * 3] + head + neck + hip + l_big_toe + r_big_toe + l_small_toe + r_small_toe + l_heel + r_heel
+    return all_keypoints
+
+
 def main():
-    model = YOLO('yolov8n-pose.pt')
-    results = model(source="test5.mp4", show=False, conf=0.3, save=False, stream=True)
+    model = YOLO('./models/yolov8/yolov8x-pose-p6.pt')
+    results = model(source="./videos/test5.mp4", show=False, conf=0.3, save=False, stream=True)
 
     all_keypoints = []  # List to store all keypoints data
 
@@ -41,6 +86,9 @@ def main():
             # Convert each float32 value to a native Python float for JSON serialization
             keypoints_list = [float(val) for val in keypoints_list]
 
+            # Estimate additional HALPE keypoints
+            halpe_keypoints = estimate_additional_keypoints(keypoints_list)
+
             # Convert the box coordinates to numpy array and then to list
             # Choose the appropriate format (xyxy, xywh, etc.) as per your requirement
             # Assuming you're using xyxy format for the box
@@ -50,7 +98,7 @@ def main():
             keypoints_data = {
                 "image_id": f"{frame_idx}.jpg",
                 "category_id": 1,  # Assuming category_id is 1 for all, modify as needed
-                "keypoints": keypoints_list,
+                "keypoints": halpe_keypoints,
                 "score": float(score) if score is not None else None,
                 "box": box, 
                 "idx": [0.0] 
@@ -59,7 +107,7 @@ def main():
             all_keypoints.append(keypoints_data)
 
     # Save the keypoints data to a JSON file
-    with open('keypoints_output.json', 'w') as f:
+    with open('./outputs/keypoints.json', 'w') as f:
         json.dump(all_keypoints, f, indent=4)
 
     for r in results:
