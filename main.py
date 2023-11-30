@@ -3,7 +3,7 @@ import numpy as np
 from ultralytics import YOLO
 import json
 
-
+# needs to be updated from 2D angles to 3D
 def calculate_angle(A, B, C):
     # Vektoren AB und BC erstellen
     AB = B - A
@@ -19,6 +19,43 @@ def calculate_angle(A, B, C):
     # Winkel in Grad umwandeln
     angle_deg = np.degrees(angle)
     return angle_deg
+
+def get_keypoints(results):
+
+    all_keypoints = []
+
+    for frame_idx, r in enumerate(results):
+        if r.keypoints and len(r.keypoints.xy) > 0:
+            # Extract xy coordinates and confidence scores
+            xy = r.keypoints.xy[0].cpu().numpy()  # Assuming the first set of keypoints corresponds to the detection
+            confidences = r.keypoints.conf[0].cpu().numpy() if r.keypoints.conf is not None else [None] * len(xy)
+
+            keypoints_list = []
+            for (x, y), confidence in zip(xy, confidences):
+                keypoints_list.extend([x, y, confidence or 0])  # Adding 0 if confidence is None
+            
+            score = r.probs[0].item() if r.probs is not None else None  # Modify this line as needed
+
+            # Convert each float32 value to a native Python float for JSON serialization
+            keypoints_list = [float(val) for val in keypoints_list]
+
+            # Estimate additional HALPE keypoints
+            halpe_keypoints = estimate_additional_keypoints(keypoints_list)
+
+            # Convert the box coordinates to numpy array and then to list
+            box = [float(val) for val in r.boxes.xyxy[0].cpu().numpy().tolist()] if r.boxes is not None else []
+
+            keypoints_data = {
+                "image_id": f"{frame_idx}.jpg",
+                "category_id": 1, 
+                "keypoints": halpe_keypoints,
+                "score": float(score) if score is not None else None,
+                "box": box, 
+                "idx": [0.0] 
+            }
+
+            all_keypoints.append(keypoints_data)
+    return all_keypoints
 
 def estimate_additional_keypoints(keypoints):
     # Extract keypoints based on their indices from COCO format
@@ -60,56 +97,26 @@ def estimate_additional_keypoints(keypoints):
     l_heel = [l_ankle[0], l_ankle[1] - 10, l_ankle[2]]
     r_heel = [r_ankle[0], r_ankle[1] - 10, r_ankle[2]]
     
-    # Combine all keypoints into a single list
     all_keypoints = keypoints[:17 * 3] + head + neck + hip + l_big_toe + r_big_toe + l_small_toe + r_small_toe + l_heel + r_heel
     return all_keypoints
 
 
+
 def main():
+
+    # Currently the best pose model from yolov8 is used
+    # Define model
     model = YOLO('./models/yolov8/yolov8x-pose-p6.pt')
-    results = model(source="./videos/test5.mp4", show=False, conf=0.3, save=False, stream=True)
 
-    all_keypoints = []  # List to store all keypoints data
-
-    for frame_idx, r in enumerate(results):
-        if r.keypoints and len(r.keypoints.xy) > 0:
-            # Extract xy coordinates and confidence scores
-            xy = r.keypoints.xy[0].cpu().numpy()  # Assuming the first set of keypoints corresponds to the detection
-            confidences = r.keypoints.conf[0].cpu().numpy() if r.keypoints.conf is not None else [None] * len(xy)
-
-            keypoints_list = []
-            for (x, y), confidence in zip(xy, confidences):
-                keypoints_list.extend([x, y, confidence or 0])  # Adding 0 if confidence is None
-            
-            score = r.probs[0].item() if r.probs is not None else None  # Modify this line as needed
-
-            # Convert each float32 value to a native Python float for JSON serialization
-            keypoints_list = [float(val) for val in keypoints_list]
-
-            # Estimate additional HALPE keypoints
-            halpe_keypoints = estimate_additional_keypoints(keypoints_list)
-
-            # Convert the box coordinates to numpy array and then to list
-            # Choose the appropriate format (xyxy, xywh, etc.) as per your requirement
-            # Assuming you're using xyxy format for the box
-            box = [float(val) for val in r.boxes.xyxy[0].cpu().numpy().tolist()] if r.boxes is not None else []
-
-            # Format the data as per your JSON structure
-            keypoints_data = {
-                "image_id": f"{frame_idx}.jpg",
-                "category_id": 1,  # Assuming category_id is 1 for all, modify as needed
-                "keypoints": halpe_keypoints,
-                "score": float(score) if score is not None else None,
-                "box": box, 
-                "idx": [0.0] 
-            }
-
-            all_keypoints.append(keypoints_data)
+    # Get the data from source
+    results = model(source="./videos/testown1.mp4", show=False, conf=0.3, save=False, stream=True)
+    keypoints = get_keypoints(results)
 
     # Save the keypoints data to a JSON file
     with open('./outputs/keypoints.json', 'w') as f:
-        json.dump(all_keypoints, f, indent=4)
+        json.dump(keypoints, f, indent=4)
 
+    # Needs to be updated from 2D to 3d angels
     for r in results:
         if r.keypoints and r.keypoints.data.shape[1] >= 17:
             keypoints = r.keypoints.data[0].numpy()  # Konvertiere in numpy-Array
