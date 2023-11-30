@@ -10,18 +10,15 @@ Hatte bei mir WSL2 Ubunutu 22 auf Win10 (sollte jedoch auf ähnlichen Systemen f
 
 ![Bild zur Demonstration](./images/image.png)
 
-## Installation
+## Installation Yolov8
 
-1. Installieren von PyTorch und zugehörigen Paketen:
-
-```
-pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-```
-
-2. Ultralytics Bibliothek installieren:
-
-```
-pip3 install ultralytics
+```bash
+conda create -n motionbert python=3.7 anaconda
+conda activate motionbert
+# Please install PyTorch according to your CUDA version.
+conda install pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
+pip install -r requirements.txt
+pip install ultralytics
 ```
 
 ## Erster Test
@@ -33,6 +30,27 @@ yolo predict model=yolov8n.pt source='https://ultralytics.com/images/bus.jpg'
 ```
 
 Die Modellcheckpoints werden automatisch heruntergeladen. 
+
+## Inference Yolov8
+
+```
+python main.py
+```
+
+Generiert keypoints.json
+
+## Inference MotionBert
+
+Optionen müssen angepasst werden
+
+keypoints.json werden von yolov8 benötigt
+
+```
+python infer_wild.py \
+--vid_path test.mp4 \
+--json_path keypoints.json \
+--out_path /output
+```
 
 ## Pose Estimation Modelle
 
