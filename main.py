@@ -3,6 +3,7 @@ import numpy as np
 from ultralytics import YOLO
 import json
 import os
+import subprocess
 
 # needs to be updated from 2D angles to 3D
 def calculate_angle(A, B, C):
@@ -123,6 +124,12 @@ def main():
      # Path to the directory containing videos
     video_dir = "./videos/todo"
 
+    # Path to the output directory for MotionBERT results
+    motionbert_output_dir = "./output/motionbert"
+
+    # Ensure the output directory exists
+    os.makedirs(motionbert_output_dir, exist_ok=True)
+
     # Iterate over each video file in the directory
     for video_file in os.listdir(video_dir):
         video_path = os.path.join(video_dir, video_file)
@@ -159,6 +166,19 @@ def main():
 
         with open(json_output_path, 'w') as json_file:
             json.dump(keypoints, json_file, indent=4)
+
+        # Run MotionBERT inference using the generated keypoints and the original video path
+        motionbert_command = [
+            'python', './MotionBert/infer_wild.py',
+            '--vid_path', video_path,
+            '--json_path', json_output_path,
+            '--out_path', motionbert_output_dir
+        ]
+
+        try:
+            subprocess.run(motionbert_command, check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error occurred while running MotionBERT: {e}")
 
 if __name__ == "__main__":
     main()
