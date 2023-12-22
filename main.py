@@ -32,7 +32,7 @@ def get_keypoints(results):
 
             keypoints_list = []
             for (x, y), confidence in zip(xy, confidences):
-                keypoints_list.extend([x, y, confidence or 0])  # Adding 0 if confidence is None
+                keypoints_list.extend([x, y, confidence if confidence is not None else 0])  # Adding 0 if confidence is None
             
             score = r.probs[0].item() if r.probs is not None else None  # Modify this line as needed
 
@@ -43,7 +43,11 @@ def get_keypoints(results):
             halpe_keypoints = estimate_additional_keypoints(keypoints_list)
 
             # Convert the box coordinates to numpy array and then to list
-            box = [float(val) for val in r.boxes.xyxy[0].cpu().numpy().tolist()] if r.boxes is not None else []
+            if r.boxes and r.boxes.xyxy.shape[0] > 0:
+                box = [float(val) for val in r.boxes.xyxy[0].cpu().numpy().tolist()]
+            else:
+                box = []
+
 
             keypoints_data = {
                 "image_id": f"{frame_idx}.jpg",
@@ -55,9 +59,15 @@ def get_keypoints(results):
             }
 
             all_keypoints.append(keypoints_data)
+
     return all_keypoints
 
 def estimate_additional_keypoints(keypoints):
+        # Limit to the first 17 keypoints (x, y, confidence for each keypoint)
+    if len(keypoints) >= 17 * 3:
+        keypoints = keypoints[:17 * 3]
+    else:
+        return [0] * (17 * 3) 
     # Extract keypoints based on their indices from COCO format
     nose = keypoints[0:3]
     l_shoulder = keypoints[5 * 3:5 * 3 + 3]
@@ -105,21 +115,19 @@ def estimate_additional_keypoints(keypoints):
 def main():
 
     # Currently the best pose model from yolov8 is used
+    # yolov8x-pose-p6.pt
     # Define model
-    model = YOLO('./models/yolov8/yolov8x-pose-p6.pt')
+    model = YOLO('./models/yolov8/yolov8s-pose.pt')
 
+    
     # Get the data from source
-    results = model(source="./videos/testown1.mp4", show=False, conf=0.3, save=False, stream=True)
+    results = model(source="./videos/test1_front_mark.mp4", show=False, conf=0.3, save=False, stream=True)
     keypoints = get_keypoints(results)
-
-    # Save the keypoints data to a JSON file
-    with open('./outputs/keypoints.json', 'w') as f:
-        json.dump(keypoints, f, indent=4)
 
     # Needs to be updated from 2D to 3d angels
     for r in results:
         if r.keypoints and r.keypoints.data.shape[1] >= 17:
-            keypoints = r.keypoints.data[0].numpy()  # Konvertiere in numpy-Array
+            keypoints = r.keypoints.data[0].cpu().numpy()  # Konvertiere in numpy-Array
 
             right_shoulder = keypoints[6][:2]  # Index 6 rechte Schulter (X,Y)
             right_elbow = keypoints[8][:2]  # Index 8 rechter Ellbogen
@@ -137,6 +145,13 @@ def main():
 
                 cv2.imshow('Winkel Rechter Arm', image)
                 cv2.waitKey(1)
+
+
+    # Save the keypoints data to a JSON file
+    with open('./outputs/keypoints.json', 'w') as f:
+        json.dump(keypoints, f, indent=4)
+
+    
 
 
 if __name__ == "__main__":
