@@ -11,7 +11,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     build-essential \  
     libfreetype6-dev \ 
     libpng-dev \      
-    pkg-config \       
+    pkg-config \  
+    ffmpeg \    
     && rm -rf /var/lib/apt/lists/*
 
 # Clone the GitHub repository recursively
@@ -45,4 +46,4 @@ EXPOSE 80
 ENV NAME World
 
 # Command to run the application
-#CMD ["python", "your_script.py"]
+CMD ["python", "main.py"]
