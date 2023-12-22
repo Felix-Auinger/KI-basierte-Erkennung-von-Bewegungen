@@ -125,7 +125,7 @@ def main():
     video_dir = "./videos/todo"
 
     # Path to the output directory for MotionBERT results
-    motionbert_output_dir = "./output/motionbert"
+    motionbert_output_dir = "./outputs/motionbert"
 
     # Ensure the output directory exists
     os.makedirs(motionbert_output_dir, exist_ok=True)

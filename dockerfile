@@ -32,7 +32,11 @@ RUN pip install ultralytics
 RUN mkdir -p ./videos/todo
 COPY videos/todo/* ./videos/todo/
 
-RUN mkdir -p ./outputs
+RUN mkdir -p ./outputs/motionbert
+
+# Copy the configs directory to the Docker image
+COPY configs ./MotionBERT/configs/pose3d/
+COPY checkpoints  ./MotionBERT/checkpoint/pose3d/
 
 # Expose any necessary ports
 EXPOSE 80
