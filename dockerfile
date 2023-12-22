@@ -32,8 +32,8 @@ RUN mkdir -p ./outputs/motionbert
 
 # Copy videos and files
 COPY videos/todo/* ./videos/todo/
-COPY configs ./MotionBERT/configs/pose3d/
-COPY checkpoints  ./MotionBERT/checkpoint/pose3d/
+COPY configs ./MotionBERT4sportDX/configs/pose3d/
+COPY checkpoints  ./MotionBERT4sportDX/checkpoint/pose3d/
 
 # Expose any necessary ports
 EXPOSE 80
@@ -42,4 +42,4 @@ EXPOSE 80
 ENV NAME World
 
 # Command to run the application
-CMD ["python", "main.py"]
+#CMD ["python", "main.py"]
