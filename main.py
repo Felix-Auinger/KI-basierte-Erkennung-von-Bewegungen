@@ -169,7 +169,7 @@ def main():
 
         # Run MotionBERT inference using the generated keypoints and the original video path
         motionbert_command = [
-            'python', './MotionBert/infer_wild.py',
+            'python', './MotionBERT/infer_wild.py',
             '--vid_path', video_path,
             '--json_path', json_output_path,
             '--out_path', motionbert_output_dir
