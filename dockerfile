@@ -25,7 +25,14 @@ RUN ls -la
 
 # Install Python dependencies
 RUN pip install torchvision torchaudio 
-RUN pip install -r requirements.txt 
+RUN pip install -r requirements.txt
+RUN pip install ultralytics
+
+# Create videos/todo directory and copy them into the container
+RUN mkdir -p ./videos/todo
+COPY videos/todo/* ./videos/todo/
+
+RUN mkdir -p ./outputs
 
 # Expose any necessary ports
 EXPOSE 80
