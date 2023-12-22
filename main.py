@@ -2,8 +2,6 @@ import cv2
 import numpy as np
 from ultralytics import YOLO
 import json
-import os
-import subprocess
 
 # needs to be updated from 2D angles to 3D
 def calculate_angle(A, B, C):
@@ -119,68 +117,42 @@ def main():
     # Currently the best pose model from yolov8 is used
     # yolov8x-pose-p6.pt
     # Define model
-    model = YOLO('./models/yolov8/yolov8x-pose-p6.pt')
+    model = YOLO('./models/yolov8/yolov8s-pose.pt')
 
-     # Path to the directory containing videos
-    video_dir = "./videos/todo"
+    
+    # Get the data from source
+    results = model(source="./videos/test1_front_mark.mp4", show=False, conf=0.3, save=False, stream=True)
+    keypoints = get_keypoints(results)
 
-    # Path to the output directory for MotionBERT results
-    motionbert_output_dir = "./outputs/motionbert"
+    # Needs to be updated from 2D to 3d angels
+    for r in results:
+        if r.keypoints and r.keypoints.data.shape[1] >= 17:
+            keypoints = r.keypoints.data[0].cpu().numpy()  # Konvertiere in numpy-Array
 
-    # Ensure the output directory exists
-    os.makedirs(motionbert_output_dir, exist_ok=True)
+            right_shoulder = keypoints[6][:2]  # Index 6 rechte Schulter (X,Y)
+            right_elbow = keypoints[8][:2]  # Index 8 rechter Ellbogen
+            right_wrist = keypoints[10][:2]  # Index 10 rechtes Handgelenk
 
-    # Iterate over each video file in the directory
-    for video_file in os.listdir(video_dir):
-        video_path = os.path.join(video_dir, video_file)
+            angle = calculate_angle(right_shoulder, right_elbow, right_wrist)
+            angle_text = f"{angle:.2f} Grad"
 
-        # Process each video
-        results = model(source=video_path, show=False, conf=0.3, save=False, stream=True)
-        keypoints = get_keypoints(results)
+            if r.orig_img is not None:
+                image = r.orig_img.copy()
+                cv2.putText(image, angle_text,
+                            org=(int(right_elbow[0]), int(right_elbow[1])),
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                            fontScale=1, color=(0, 255, 0), thickness=2)
 
-        # Needs to be updated from 2D to 3d angels
-        for r in results:
-            if r.keypoints and r.keypoints.data.shape[1] >= 17:
-                keypoints = r.keypoints.data[0].cpu().numpy()  # Konvertiere in numpy-Array
+                cv2.imshow('Winkel Rechter Arm', image)
+                cv2.waitKey(1)
 
-                right_shoulder = keypoints[6][:2]  # Index 6 rechte Schulter (X,Y)
-                right_elbow = keypoints[8][:2]  # Index 8 rechter Ellbogen
-                right_wrist = keypoints[10][:2]  # Index 10 rechtes Handgelenk
 
-                angle = calculate_angle(right_shoulder, right_elbow, right_wrist)
-                angle_text = f"{angle:.2f} Grad"
+    # Save the keypoints data to a JSON file
+    with open('./outputs/keypoints.json', 'w') as f:
+        json.dump(keypoints, f, indent=4)
 
-                if r.orig_img is not None:
-                    image = r.orig_img.copy()
-                    cv2.putText(image, angle_text,
-                                org=(int(right_elbow[0]), int(right_elbow[1])),
-                                fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                fontScale=1, color=(0, 255, 0), thickness=2)
+    
 
-                    cv2.imshow('Winkel Rechter Arm', image)
-                    cv2.waitKey(1)
-
-        # Save the keypoints data to a separate JSON file for each video
-        json_filename = video_file.split('.')[0] + '_keypoints.json'  # Create a unique filename
-        json_output_path = os.path.join('./outputs', json_filename)  # Path for the JSON file
-
-        with open(json_output_path, 'w') as json_file:
-            json.dump(keypoints, json_file, indent=4)
-
-        # Run MotionBERT inference using the generated keypoints and the original video path
-        motionbert_command = [
-            'python', './MotionBERT4sportDX/infer_wild.py',
-            '--vid_path', video_path,
-            '--json_path', json_output_path,
-            '--out_path', motionbert_output_dir,
-            '--config', 'MotionBERT4sportDX/configs/pose3d/MB_ft_h36m_global_lite.yaml',
-            '--evaluate', 'MotionBERT4sportDX/checkpoint/pose3d/FT_MB_lite_MB_ft_h36m_global_lite/best_epoch.bin'
-        ]
-        
-        try:
-            subprocess.run(motionbert_command, check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"Error occurred while running MotionBERT: {e}")
 
 if __name__ == "__main__":
     main()
