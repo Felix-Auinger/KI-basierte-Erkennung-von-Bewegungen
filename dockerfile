@@ -21,21 +21,17 @@ RUN git clone --recurse-submodules -b development_motionBert_mark https://github
 # Change working directory to the cloned repo
 WORKDIR /usr/src/app/KI-basierte-Erkennung-von-Bewegungen
 
-# List the contents of the directory to verify the presence of requirements.txt
-RUN ls -la
-
 # Install Python dependencies
 RUN pip install torchvision torchaudio 
 RUN pip install -r requirements.txt
 RUN pip install ultralytics
 
-# Create videos/todo directory and copy them into the container
+# Create dirs
 RUN mkdir -p ./videos/todo
-COPY videos/todo/* ./videos/todo/
-
 RUN mkdir -p ./outputs/motionbert
 
-# Copy the configs directory to the Docker image
+# Copy videos and files
+COPY videos/todo/* ./videos/todo/
 COPY configs ./MotionBERT/configs/pose3d/
 COPY checkpoints  ./MotionBERT/checkpoint/pose3d/
 
