@@ -172,9 +172,11 @@ def main():
             'python', './MotionBERT/infer_wild.py',
             '--vid_path', video_path,
             '--json_path', json_output_path,
-            '--out_path', motionbert_output_dir
+            '--out_path', motionbert_output_dir,
+            '--config', 'MotionBERT/configs/pose3d/MB_ft_h36m_global_lite.yaml',
+            '--evaluate', 'MotionBERT/checkpoint/pose3d/FT_MB_lite_MB_ft_h36m_global_lite/best_epoch.bin'
         ]
-
+        
         try:
             subprocess.run(motionbert_command, check=True)
         except subprocess.CalledProcessError as e:
