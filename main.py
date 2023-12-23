@@ -115,7 +115,7 @@ def estimate_additional_keypoints(keypoints):
 
 
 
-def main():
+def main(model_path):
 
     # Currently the best pose model from yolov8 is used
     # yolov8x-pose-p6.pt
