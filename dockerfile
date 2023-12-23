@@ -16,7 +16,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Clone the GitHub repository recursively
-RUN git clone --recurse-submodules -b development_motionBert_mark https://github.com/Felix-Auinger/KI-basierte-Erkennung-von-Bewegungen.git
+RUN git clone --recurse-submodules -b development_mark https://github.com/Felix-Auinger/KI-basierte-Erkennung-von-Bewegungen.git
 
 # Change working directory to the cloned repo
 WORKDIR /usr/src/app/KI-basierte-Erkennung-von-Bewegungen
