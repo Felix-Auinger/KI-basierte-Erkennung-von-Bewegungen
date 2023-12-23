@@ -4,6 +4,7 @@ from ultralytics import YOLO
 import json
 import os
 import subprocess
+import argparse
 
 # needs to be updated from 2D angles to 3D
 def calculate_angle(A, B, C):
@@ -119,7 +120,8 @@ def main():
     # Currently the best pose model from yolov8 is used
     # yolov8x-pose-p6.pt
     # Define model
-    model = YOLO('./models/yolov8/yolov8x-pose-p6.pt')
+
+    model = YOLO(model_path)
 
      # Path to the directory containing videos
     video_dir = "./videos/todo"
@@ -183,4 +185,21 @@ def main():
             print(f"Error occurred while running MotionBERT: {e}")
 
 if __name__ == "__main__":
-    main()
+    # Model choices
+    models = [
+        'YOLOv8n-pose',
+        'YOLOv8s-pose',
+        'YOLOv8m-pose',
+        'YOLOv8l-pose',
+        'YOLOv8x-pose',
+        'YOLOv8x-pose-p6'
+    ]
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--model', type=int, choices=range(len(models)), help='Model index to use')
+    args = parser.parse_args()
+
+    selected_model = models[args.model]
+    model_path = f'./models/{selected_model}.pt'
+
+    main(model_path)

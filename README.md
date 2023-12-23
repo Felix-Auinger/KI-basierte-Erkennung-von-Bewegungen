@@ -25,7 +25,7 @@ To run the `sportdx` container with GPU and GUI support:
    xhost +local:docker
    ```
 
-2. Run the container:
+2. Run the container: (only use --gpus all if you have a gpu)
    ```bash
    docker run -it --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix sportdx
    ```
@@ -47,7 +47,7 @@ If the container `sportdx` is already created and you want to start it:
 ## Folder Structure
 
 ```
-├── checkpointscheckpoints\FT_MB_lite_MB_ft_h36m_global_lite\ *Place motionbert checkpoint here*
+├── checkpoints *Place motionbert checkpoint here*
 ├── configs *place config motionBert here*
 ├── models *yolov8 model will be here*
 ├── MotionBERT4sportDX *Motionbert fork*
