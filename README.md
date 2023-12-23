@@ -1,65 +1,67 @@
-# KI-basierte Erkennung von Bewegungen
+# SportDX Docker Container Setup
 
-## Voraussetzungen
+This document provides instructions for building and running the `sportdx` Docker container, which is set up for GPU-accelerated PyTorch applications with GUI support via WSL2.
 
+## Prerequisites
 
-- **Python:** Version >= 3.8
-- **PyTorch:** Version >= 1.8
+- Windows 10 or 11 with WSL2 enabled.
+- NVIDIA GPU with the latest drivers installed.
+- Docker Desktop for Windows with WSL2 backend and NVIDIA Container Toolkit.
 
-Hatte bei mir WSL2 Ubunutu 22 auf Win10 (sollte jedoch auf ähnlichen Systemen funktionieren)
+## Building the Docker Image
 
-![Bild zur Demonstration](./images/image.png)
+1. Open WSL2 and navigate to the directory containing the Dockerfile.
+2. Build the Docker image:
+   ```bash
+   docker build -t sportdx .
+   ```
 
-## Installation Yolov8
+## Running the Docker Container
 
-```bash
-conda create -n motionbert python=3.7 anaconda
-conda activate motionbert
-# Please install PyTorch according to your CUDA version.
-conda install pytorch torchvision torchaudio pytorch-cuda=11.6 -c pytorch -c nvidia
-pip install -r requirements.txt
-pip install ultralytics
+To run the `sportdx` container with GPU and GUI support:
+
+1. Allow local connections to the X server:
+   ```bash
+   xhost +local:docker
+   ```
+
+2. Run the container: (only use --gpus all if you have a gpu)
+   ```bash
+   docker run -it --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix sportdx
+   ```
+
+## Starting an Existing Container
+
+If the container `sportdx` is already created and you want to start it:
+
+1. Start the container:
+   ```bash
+   docker start sportdx
+   ```
+
+2. Attach to the container for interaction:
+   ```bash
+   docker attach sportdx
+   ```
+
+## Folder Structure
+
+```
+├── checkpoints *Place motionbert checkpoint here*
+├── configs *place config motionBert here*
+├── models *yolov8 model will be here*
+├── MotionBERT4sportDX *Motionbert fork*
+├── outputs *outputs from yolov8 and motionbert*
+├── videos/todo *add videos here*
+├── dockerfile
+├── main.py
+├── README.md
+└── requirements.txt
 ```
 
-## Erster Test
+## Notes
 
-Um sicherzustellen, dass alles korrekt installiert wurde, führen Sie den folgenden Befehl aus:
+- The command `xhost +local:docker` opens up the X server for local connections and should be used with caution due to potential security implications.
+- The Docker setup is advanced and might require specific configurations based on your hardware and software environment.
+- Ensure that your WSL2 and Docker Desktop are properly configured for GPU acceleration.
 
-```
-yolo predict model=yolov8n.pt source='https://ultralytics.com/images/bus.jpg'
-```
-
-Die Modellcheckpoints werden automatisch heruntergeladen. 
-
-## Inference Yolov8
-
-```
-python main.py
-```
-
-Generiert keypoints.json
-
-## Inference MotionBert
-
-Optionen müssen angepasst werden
-
-keypoints.json werden von yolov8 benötigt
-
-```
-python infer_wild.py \
---vid_path test.mp4 \
---json_path keypoints.json \
---out_path /output
-```
-
-## Pose Estimation Modelle
-
-Hier finden Sie eine Auflistung aller Pose Estimation Modelle:
-
-![Liste der Pose Estimation Modelle](./images/image-1.png)
-
-Die oberen Modelle sind in der Regel schneller, aber möglicherweise ungenauer.
-
-Um eine Inference mit einem anderen Bild oder Video zu starten, ersetzen Sie einfach den Wert in `source=''` und passen Sie gegebenenfalls das Modell an:
-
-yolo predict model=yolov8n-pose.pt source=test.mp4
