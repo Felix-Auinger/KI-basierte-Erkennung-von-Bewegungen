@@ -115,13 +115,20 @@ def estimate_additional_keypoints(keypoints):
 
 
 
-def main(model_path):
+def main(model_index):
 
-    # Currently the best pose model from yolov8 is used
-    # yolov8x-pose-p6.pt
-    # Define model
+    # Define the model to download based on the index
+    model_names = [
+        'yolov8n-pose',
+        'yolov8s-pose',
+        'yolov8m-pose',
+        'yolov8l-pose',
+        'yolov8x-pose',
+        'yolov8x-pose-p6'
+    ]
+    model_name = model_names[model_index]
 
-    model = YOLO(model_path)
+    model = YOLO(model_name)
 
      # Path to the directory containing videos
     video_dir = "./videos/todo"
@@ -185,21 +192,8 @@ def main(model_path):
             print(f"Error occurred while running MotionBERT: {e}")
 
 if __name__ == "__main__":
-    # Model choices
-    models = [
-        'YOLOv8n-pose',
-        'YOLOv8s-pose',
-        'YOLOv8m-pose',
-        'YOLOv8l-pose',
-        'YOLOv8x-pose',
-        'YOLOv8x-pose-p6'
-    ]
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=int, choices=range(len(models)), help='Model index to use')
+    parser.add_argument('--model', type=int, choices=range(6), help='Model index to use')
     args = parser.parse_args()
 
-    selected_model = models[args.model]
-    model_path = f'./models/{selected_model}.pt'
-
-    main(model_path)
+    main(args.model)
