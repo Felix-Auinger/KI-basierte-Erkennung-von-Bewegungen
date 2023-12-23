@@ -46,6 +46,7 @@ If the container `sportdx` is already created and you want to start it:
 
 ## Folder Structure
 
+```
 ├── checkpointscheckpoints\FT_MB_lite_MB_ft_h36m_global_lite\ *Place motionbert checkpoint here*
 ├── configs *place config motionBert here*
 ├── models *yolov8 model will be here*
@@ -56,6 +57,7 @@ If the container `sportdx` is already created and you want to start it:
 ├── main.py
 ├── README.md
 └── requirements.txt
+```
 
 ## Notes
 
