@@ -10,7 +10,7 @@ This document provides instructions for building and running the `sportdx` Docke
 
 ## Building the Docker Image
 
-1. Open WSL2 and navigate to the directory containing the Dockerfile.
+1. Open WSL2 and navigate to the directory containing the Dockerfile (after installing and running docker).
 2. Build the Docker image:
    ```bash
    docker build -t sportdx .
@@ -27,7 +27,7 @@ To run the `sportdx` container with GPU and GUI support:
 
 2. Run the container: (only use --gpus all if you have a gpu)
    ```bash
-   docker run -it --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix sportdx
+   docker run -it --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $(pwd):/usr/src/app/KI-basierte-Erkennung-von-Bewegungen sportdx
    ```
 
 ## Starting an Existing Container
