@@ -10,7 +10,7 @@ This document provides instructions for building and running the `sportdx` Docke
 
 ## Building the Docker Image
 
-1. Open WSL2 and navigate to the directory containing the Dockerfile.
+1. Open WSL2 and navigate to the directory containing the Dockerfile (after installing and running docker).
 2. Build the Docker image:
    ```bash
    docker build -t sportdx .
