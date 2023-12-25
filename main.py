@@ -119,16 +119,23 @@ def main(model_index):
 
     # Define the model to download based on the index
     model_names = [
-        'yolov8n-pose',
-        'yolov8s-pose',
-        'yolov8m-pose',
-        'yolov8l-pose',
-        'yolov8x-pose',
-        'yolov8x-pose-p6'
+        'yolov8n-pose.pt',
+        'yolov8s-pose.pt',
+        'yolov8m-pose.pt',
+        'yolov8l-pose.pt',
+        'yolov8x-pose.pt',
+        'yolov8x-pose-p6.pt'
     ]
     model_name = model_names[model_index]
 
-    model = YOLO(model_name)
+    model_path = f'./models/{model_name}'
+
+    # Check if the model file exists, download if not
+    if not os.path.exists(model_path):
+        print(f"Model {model_name} not found. Downloading...")
+        model = YOLO(model_name)  # This should trigger the download
+    else:
+        model = YOLO(model_path)
 
      # Path to the directory containing videos
     video_dir = "./videos/todo"
@@ -143,9 +150,14 @@ def main(model_index):
     for video_file in os.listdir(video_dir):
         video_path = os.path.join(video_dir, video_file)
 
+        print("Starting video processing")
+        print("Starting Yolov8 processing")
+
         # Process each video
         results = model(source=video_path, show=False, conf=0.3, save=False, stream=True)
         keypoints = get_keypoints(results)
+
+        print("Finished Yolov8")
 
         # Needs to be updated from 2D to 3d angels
         for r in results:
@@ -176,6 +188,12 @@ def main(model_index):
         with open(json_output_path, 'w') as json_file:
             json.dump(keypoints, json_file, indent=4)
 
+        print("Yolov8 Keypoints safed to json")
+        print("Starting motionBert processing")
+        print("vid_path:" + video_path)
+        print("json_path:" + json_output_path)
+        print("motionbert_output_path:" + motionbert_output_dir)
+
         # Run MotionBERT inference using the generated keypoints and the original video path
         motionbert_command = [
             'python', './MotionBERT4sportDX/infer_wild.py',
@@ -185,6 +203,9 @@ def main(model_index):
             '--config', 'MotionBERT4sportDX/configs/pose3d/MB_ft_h36m_global_lite.yaml',
             '--evaluate', 'MotionBERT4sportDX/checkpoint/pose3d/FT_MB_lite_MB_ft_h36m_global_lite/best_epoch.bin'
         ]
+
+        print("Finished motionBert")
+        print("Finised video preocessing")
         
         try:
             subprocess.run(motionbert_command, check=True)
