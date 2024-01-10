@@ -41,12 +41,21 @@ WORKDIR /usr/src/app/KI-basierte-Erkennung-von-Bewegungen
 
 
 # Install Python dependencies using Conda and pip as a fallback
-RUN conda install -c pytorch torchvision torchaudio tensorboardX tqdm \
-    && conda install -c conda-forge easydict prettytable chumpy \
-       opencv matplotlib==3.1.1 roma ipdb
+RUN conda install -c pytorch 
+RUN conda install -c torchvision
+RUN conda install -c torchaudio
+RUN conda install -c tensorboardX
+RUN conda install -c tqdm
+RUN conda install -c conda-forge easydict 
+RUN conda install -c conda-forge prettytable 
+RUN conda install -c conda-forge chumpy 
+RUN conda install -c conda-forge opencv 
+RUN conda install -c conda-forge matplotlib==3.1.1
+RUN conda install -c conda-forge roma
+RUN conda install -c conda-forge ipdb
 
 # Install the ultralytics package using conda
-conda install -c conda-forge ultralytics
+RUN conda install -c conda-forge ultralytics
 
 
 # Create dirs
