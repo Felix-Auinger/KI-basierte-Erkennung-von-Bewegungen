@@ -39,6 +39,14 @@ RUN pip install torchvision \
     smplx[all]
 RUN pip install ultralytics
 
+# Install Python dependencies using Conda and pip as a fallback
+RUN conda install -c pytorch torchvision torchaudio tensorboardX tqdm \
+    && conda install -c conda-forge easydict prettytable chumpy \
+       opencv matplotlib==3.1.1 roma ipdb
+
+# Install the ultralytics package using conda
+conda install -c conda-forge ultralytics
+
 # Create dirs
 #RUN mkdir -p ./videos/todo
 #RUN mkdir -p ./outputs/motionbert
