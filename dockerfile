@@ -23,21 +23,31 @@ WORKDIR /usr/src/app/KI-basierte-Erkennung-von-Bewegungen
 #COPY . .
 
 # Install Python dependencies
-RUN pip install torchvision \
-    torchaudio \ 
-    tensorboardX \
-    tqdm \
-    easydict  \
-    prettytable  \
-    chumpy  \
-    opencv-python  \
-    imageio-ffmpeg  \
-    matplotlib==3.1.1  \
-    roma  \
-    ipdb  \
-    pytorch-metric-learning  \
-    smplx[all]
-RUN pip install ultralytics
+#RUN pip install torchvision \
+#    torchaudio \ 
+#    tensorboardX \
+#    tqdm \
+#    easydict  \
+#   prettytable  \
+#    chumpy  \
+#    opencv-python  \
+#    imageio-ffmpeg  \
+#    matplotlib==3.1.1  \
+#    roma  \
+#    ipdb  \
+#    pytorch-metric-learning  \
+#    smplx[all]
+#RUN pip install ultralytics
+
+
+# Install Python dependencies using Conda and pip as a fallback
+RUN conda install -c pytorch torchvision torchaudio tensorboardX tqdm \
+    && conda install -c conda-forge easydict prettytable chumpy \
+       opencv matplotlib==3.1.1 roma ipdb
+
+# Install the ultralytics package using conda
+conda install -c conda-forge ultralytics
+
 
 # Create dirs
 #RUN mkdir -p ./videos/todo
