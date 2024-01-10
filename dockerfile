@@ -48,10 +48,10 @@ RUN conda install -c pytorch tqdm
 RUN conda install -c conda-forge easydict 
 RUN conda install -c conda-forge prettytable 
 RUN pip install chumpy 
-RUN conda install -c conda-forge opencv
-RUN conda install -c conda-forge matplotlib==3.1.1
-RUN conda install -c conda-forge roma
-RUN conda install -c conda-forge ipdb
+RUN pip install opencv
+RUN pip install matplotlib==3.1.1
+RUN pip install roma
+RUN pip install ipdb
 RUN pip install pytorch-metric-learning
 RUN pip install smplx[all]
 
