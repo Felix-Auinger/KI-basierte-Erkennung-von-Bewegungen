@@ -41,11 +41,10 @@ WORKDIR /usr/src/app/KI-basierte-Erkennung-von-Bewegungen
 
 
 # Install Python dependencies using Conda and pip as a fallback
-RUN conda install -c pytorch 
-RUN conda install -c torchvision
-RUN conda install -c torchaudio
-RUN conda install -c tensorboardX
-RUN conda install -c tqdm
+RUN conda install -c pytorch torchvision
+RUN conda install -c pytorch torchaudio
+RUN conda install -c pytorch tensorboardX
+RUN conda install -c pytorch tqdm
 RUN conda install -c conda-forge easydict 
 RUN conda install -c conda-forge prettytable 
 RUN conda install -c conda-forge chumpy 
