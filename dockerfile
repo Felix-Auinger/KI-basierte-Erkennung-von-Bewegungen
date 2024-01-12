@@ -1,5 +1,8 @@
 # Use an NVIDIA CUDA base image with PyTorch support
-FROM pytorch/pytorch:1.8.1-cuda11.1-cudnn8-runtime
+#FROM pytorch/pytorch:1.8.1-cuda11.1-cudnn8-runtime
+
+# Start from a PyTorch base image for Jetson (L4T) compatible with ARM
+FROM nvcr.io/nvidia/l4t-pytorch:r32.4.4-pth1.6-py3
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
@@ -49,7 +52,7 @@ RUN pip install ultralytics
 #COPY checkpoints  ./MotionBERT4sportDX/checkpoint/pose3d/
 
 # Expose any necessary ports
-EXPOSE 80
+#EXPOSE 80
 
 # Define environment variable if needed
 ENV NAME sportdx
