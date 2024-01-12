@@ -9,11 +9,11 @@ WORKDIR /usr/src/app
 
 # Install system dependencies including gcc and other build tools
 #RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y xfce4 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential  
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libfreetype6-dev 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libpng-dev      
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y pkg-config 
-RUN rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential  
+#RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libfreetype6-dev 
+#RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y libpng-dev      
+#RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y pkg-config 
+#RUN rm -rf /var/lib/apt/lists/*
 
 # Clone the GitHub repository recursively ( only if you dont already have the github)
 # RUN git clone --recurse-submodules -b development_mark https://github.com/Felix-Auinger/KI-basierte-Erkennung-von-Bewegungen.git
