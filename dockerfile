@@ -48,7 +48,7 @@ RUN conda install -c pytorch tqdm
 RUN conda install -c conda-forge easydict 
 RUN conda install -c conda-forge prettytable 
 RUN pip install chumpy 
-RUN pip install opencv
+RUN pip install opencv-python
 RUN pip install matplotlib==3.1.1
 RUN pip install roma
 RUN pip install ipdb
@@ -56,7 +56,7 @@ RUN pip install pytorch-metric-learning
 RUN pip install smplx[all]
 
 # Install the ultralytics package using conda
-RUN conda install -c conda-forge ultralytics
+RUN pip install ultralytics
 
 
 # Create dirs

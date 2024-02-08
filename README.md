@@ -29,7 +29,7 @@ To run the `sportdx` container with GPU and GUI support:
    ```bash
    docker run -it --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $(pwd):/usr/src/app/KI-basierte-Erkennung-von-Bewegungen sportdx
    ```
-
+docker run -it --gpus all -v $(pwd):/usr/src/app/KI-basierte-Erkennung-von-Bewegungen sportdx
 ## Starting an Existing Container
 
 If the container `sportdx` is already created and you want to start it:

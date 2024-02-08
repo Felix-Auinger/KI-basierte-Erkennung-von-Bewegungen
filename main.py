@@ -204,6 +204,15 @@ def main(model_index):
             '--evaluate', 'MotionBERT4sportDX/checkpoint/pose3d/FT_MB_lite_MB_ft_h36m_global_lite/best_epoch.bin'
         ]
 
+        # Run mesh 
+       # motionbert_command_mesh = [
+       #     'python', './MotionBERT4sportDX/infer_wild_mesh.py',
+       #     '--vid_path', video_path,
+       #     '--json_path', json_output_path,
+       #     '--out_path', motionbert_output_dir,
+       #    # '--ref_3d_motion_path', <3d-pose-results.npy> # Optional, use the estimated 3D motion for root trajectory.
+      #  ]
+
         print("Finished motionBert")
         print("Finised video preocessing")
         
@@ -211,6 +220,11 @@ def main(model_index):
             subprocess.run(motionbert_command, check=True)
         except subprocess.CalledProcessError as e:
             print(f"Error occurred while running MotionBERT: {e}")
+
+      #  try:
+     #       subprocess.run(motionbert_command_mesh, check=True)
+     #   except subprocess.CalledProcessError as e:
+    #        print(f"Error occurred while running MotionBERT: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
