@@ -188,6 +188,12 @@ def main(model_index):
         with open(json_output_path, 'w') as json_file:
             json.dump(keypoints, json_file, indent=4)
 
+        # create file to save angles from motionbert
+      #  os.makedirs(os.path.dirname('./outputs/angles'), exist_ok=True)
+        with open('./outputs/angle_output.txt', 'w') as f:
+            
+            f.close()
+
         print("Yolov8 Keypoints safed to json")
         print("Starting motionBert processing")
         print("vid_path:" + video_path)
