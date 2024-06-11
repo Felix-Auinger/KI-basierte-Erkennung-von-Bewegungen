@@ -150,6 +150,8 @@ def main(model_index):
     for video_file in os.listdir(video_dir):
         video_path = os.path.join(video_dir, video_file)
 
+        print("Videofile: " , video_file)
+
         print("Starting video processing")
         print("Starting Yolov8 processing")
 
@@ -188,10 +190,11 @@ def main(model_index):
         with open(json_output_path, 'w') as json_file:
             json.dump(keypoints, json_file, indent=4)
 
-        # create file to save angles from motionbert
-      #  os.makedirs(os.path.dirname('./outputs/angles'), exist_ok=True)
-        with open('./outputs/angle_output.txt', 'w') as f:
-            
+        # create file to save angles from calculation in vismo.py
+        # os.makedirs(os.path.dirname('./outputs/angles'), exist_ok=True)
+        with open('./outputs/angle_output_verlauf_rechts.txt', 'w') as f:
+            f.close()
+        with open('./outputs/angle_output_verlauf_links.txt', 'w') as f:
             f.close()
 
         print("Yolov8 Keypoints safed to json")
@@ -231,6 +234,10 @@ def main(model_index):
      #       subprocess.run(motionbert_command_mesh, check=True)
      #   except subprocess.CalledProcessError as e:
     #        print(f"Error occurred while running MotionBERT: {e}")
+
+
+    # calculate score from information in result files by executing process_resuls.py
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
