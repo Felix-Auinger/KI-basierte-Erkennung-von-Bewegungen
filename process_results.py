@@ -57,7 +57,7 @@ def process_files():
             knie_value1 = extract_value_from_line(content1, "Knie")
             knie_value2 = extract_value_from_line(content2, "Knie")
             rumpf_value1 = extract_value_from_line(content1, "Rumpfbewegung")
-            # rumpf_value2 = extract_value_from_line(content2, "Rumpfbewegung")
+            rumpf_value2 = extract_value_from_line(content2, "Rumpfbewegung")
             reakt_value1 = extract_value_from_line(content1, "Reaktiv")
             reakt_value2 = extract_value_from_line(content2, "Reaktiv")
 
@@ -82,10 +82,18 @@ def process_files():
             # Rumpfbewegung ist in beiden Files dieselbe, daher nur einmal werten 
             if rumpf_value1 is not None:
                 if rumpf_value1 < 5:
-                    print("Rumpf stabil")
+                    print("Rumpf in Video 2 stabil")
                     score += 1
                 else:
-                    print("Rumpf instabil, da Wert ", rumpf_value1, " > 5°")
+                    print("Rumpf in Video 2 instabil, da Wert ", rumpf_value1, " > 5°")
+                    score -= 1
+
+            if rumpf_value2 is not None:
+                if rumpf_value2 < 5:
+                    print("Rumpf in Video 2 stabil")
+                    score += 1
+                else:
+                    print("Rumpf in Video 2 instabil, da Wert ", rumpf_value2, " > 5°")
                     score -= 1
             
             # Differenz der Reaktivitätsindices berechnen
