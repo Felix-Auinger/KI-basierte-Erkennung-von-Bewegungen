@@ -22,7 +22,7 @@ def calculate_angle(A, B, C):
 
 def main():
     model = YOLO('yolov8n-pose.pt')
-    results = model(source=0, show=False, conf=0.3, save=False, stream=True)
+    results = model(source=0, show=True, conf=0.3, save=False, stream=True)
 
     for r in results:
         if r.keypoints and r.keypoints.data.shape[1] >= 17:
