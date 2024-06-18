@@ -65,32 +65,32 @@ def process_files():
             
             if (knie_value1 is not None):
                 # die beiden Knie getrennt betrachten
-                if knie_value1 < 170: 
-                    print("Knie 1: instabil, da Wert ", knie_value1 , " < 170°")
+                if knie_value1 < 168: 
+                    print("Knie 1: instabil, da Wert ", knie_value1 , " < 168°")
                     score -= 1
                 else:
                     score += 1
-                    print("Knie 1: stabil")
+                    print("Knie 1: stabil, da Wert ", knie_value1 , " > 168°")
                 
-                if (knie_value2 < 170):
-                    print("Knie 2: instabil, da Wert ", knie_value2 , " < 170°")
+                if (knie_value2 < 168):
+                    print("Knie 2: instabil, da Wert ", knie_value2 , " < 168°")
                     score -= 1
                 else:
                     score += 1
-                    print("Knie 2: stabil")
+                    print("Knie 2: stabil, da Wert ", knie_value2 , " > 168°")
             
             # Rumpfbewegung ist in beiden Files dieselbe, daher nur einmal werten 
             if rumpf_value1 is not None:
                 if rumpf_value1 < 5:
-                    print("Rumpf in Video 2 stabil")
+                    print("Rumpf in Video 1 stabil,  da Wert ", rumpf_value1, " < 5°")
                     score += 1
                 else:
-                    print("Rumpf in Video 2 instabil, da Wert ", rumpf_value1, " > 5°")
+                    print("Rumpf in Video 1 instabil, da Wert ", rumpf_value1, " > 5°")
                     score -= 1
 
             if rumpf_value2 is not None:
                 if rumpf_value2 < 5:
-                    print("Rumpf in Video 2 stabil")
+                    print("Rumpf in Video 2 stabil, da Wert ", rumpf_value2, " < 5°")
                     score += 1
                 else:
                     print("Rumpf in Video 2 instabil, da Wert ", rumpf_value2, " > 5°")
@@ -100,16 +100,16 @@ def process_files():
             if reakt_value1 is not None and reakt_value2 is not None:
                 reakt_idx = abs(reakt_value1 - reakt_value2) / ((reakt_value1 + reakt_value2) / 2)
                 if reakt_idx < 0.1:
-                    print("guter Reaktivitätsindex")
+                    print("Reaktivitätsindex Abweichung ", reakt_idx, " < 0.1")
                     score += 1
                 else:
                     score -= 1 
-                    print("schlechter Reaktivitätsindex. Abweichung , ", reakt_idx, " > 0.1")
+                    print("Reaktivitätsindex Abweichung ", reakt_idx, " > 0.1")
             else:
                 print("Fehlende Reaktivitätsindexwerte")
 
             # Score ausgeben: Reicht von -4 (schlecht) bis 4 (sehr gut)
-            print("Gesamtscore ", key, ": ", score)
+            print("Gesamtscore für ", key, ": ", score)
 
 # Hauptfunktion ausführen
 process_files()
