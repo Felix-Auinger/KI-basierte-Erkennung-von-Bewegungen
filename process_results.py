@@ -65,19 +65,19 @@ def process_files():
             
             if (knie_value1 is not None):
                 # die beiden Knie getrennt betrachten
-                if knie_value1 < 170: 
-                    print("Knie 1: instabil, da Wert ", knie_value1 , " < 170°")
+                if knie_value1 < 168: 
+                    print("Knie 1: instabil, da Wert ", knie_value1 , " < 168°")
                     score -= 1
                 else:
                     score += 1
-                    print("Knie 1: stabil, da Wert ", knie_value1 , " > 170°")
+                    print("Knie 1: stabil, da Wert ", knie_value1 , " > 168°")
                 
-                if (knie_value2 < 170):
-                    print("Knie 2: instabil, da Wert ", knie_value2 , " < 170°")
+                if (knie_value2 < 168):
+                    print("Knie 2: instabil, da Wert ", knie_value2 , " < 168°")
                     score -= 1
                 else:
                     score += 1
-                    print("Knie 2: stabil, da Wert ", knie_value2 , " > 170°")
+                    print("Knie 2: stabil, da Wert ", knie_value2 , " > 168°")
             
             # Rumpfbewegung ist in beiden Files dieselbe, daher nur einmal werten 
             if rumpf_value1 is not None:
